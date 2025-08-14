@@ -1,0 +1,146 @@
+import { useState, useEffect } from 'react';
+import { Heart, Calendar, Gem, Home as HomeIcon, Clock } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+
+interface Milestone {
+  name: string;
+  date: Date;
+  icon: React.ReactNode;
+  color: string;
+}
+
+export const RelationshipCounters = () => {
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Example dates - you'll replace these with your actual dates
+  const milestones: Milestone[] = [
+    {
+      name: "First Date",
+      date: new Date('2023-01-15'), // Replace with your actual first date
+      icon: <Heart className="w-5 h-5" />,
+      color: "text-red-500"
+    },
+    {
+      name: "Proposal Day",
+      date: new Date('2023-08-20'), // Replace with your actual proposal date
+      icon: <Gem className="w-5 h-5" />,
+      color: "text-yellow-500"
+    },
+    {
+      name: "Wedding Day",
+      date: new Date('2024-06-15'), // Replace with your actual wedding date
+      icon: <HomeIcon className="w-5 h-5" />,
+      color: "text-purple-500"
+    }
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const calculateTimeDifference = (date: Date) => {
+    const diff = currentTime.getTime() - date.getTime();
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    return { days, hours, minutes, seconds };
+  };
+
+  const getNextMonthiversary = () => {
+    const firstDate = milestones[0].date;
+    const current = new Date();
+    const next = new Date(current.getFullYear(), current.getMonth() + 1, firstDate.getDate());
+    
+    if (current.getDate() > firstDate.getDate()) {
+      next.setMonth(next.getMonth() + 1);
+    } else if (current.getDate() === firstDate.getDate()) {
+      // Today is monthiversary!
+      return { isToday: true, daysLeft: 0 };
+    }
+    
+    const daysLeft = Math.ceil((next.getTime() - current.getTime()) / (1000 * 60 * 60 * 24));
+    return { isToday: false, daysLeft, nextDate: next };
+  };
+
+  const monthiversary = getNextMonthiversary();
+
+  return (
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 animate-fade-in">
+      {/* Milestone Counters */}
+      {milestones.map((milestone, index) => {
+        const timeDiff = calculateTimeDifference(milestone.date);
+        
+        return (
+          <Card 
+            key={milestone.name} 
+            className="bg-card/80 backdrop-blur-sm border-border/50 hover:shadow-lg transition-all duration-300 love-glow"
+            style={{ animationDelay: `${index * 0.1}s` }}
+          >
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <span className={milestone.color}>{milestone.icon}</span>
+                {milestone.name}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div className="text-2xl font-bold text-primary">
+                  {timeDiff.days} days
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {timeDiff.hours}h {timeDiff.minutes}m {timeDiff.seconds}s
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  Since {milestone.date.toLocaleDateString()}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
+
+      {/* Monthiversary Countdown */}
+      <Card className="md:col-span-2 lg:col-span-3 bg-gradient-to-r from-accent/20 to-primary/20 backdrop-blur-sm border-border/50 love-glow">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl">
+            <Heart className="w-6 h-6 text-red-500 animate-heart-beat" />
+            Next Monthiversary
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {monthiversary.isToday ? (
+            <div className="text-center py-6">
+              <div className="text-4xl font-bold text-primary mb-2">
+                🎉 Happy Monthiversary! 🎉
+              </div>
+              <div className="text-lg text-muted-foreground">
+                Today marks another beautiful month together!
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-lg font-semibold">Days until celebration:</span>
+                <span className="text-3xl font-bold text-primary">{monthiversary.daysLeft}</span>
+              </div>
+              <Progress 
+                value={((30 - (monthiversary.daysLeft || 0)) / 30) * 100} 
+                className="h-3"
+              />
+              <div className="text-sm text-muted-foreground text-center">
+                {monthiversary.nextDate && monthiversary.nextDate.toLocaleDateString()}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
