@@ -1,68 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Calendar, MapPin, Clock, Package, Plus, Heart } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-
-interface DatePlan {
-  id: string;
-  title: string;
-  location: string;
-  description: string;
-  date: string;
-  time: string;
-  whatToBring: string[];
-  isUpcoming: boolean;
-  category: 'romantic' | 'adventure' | 'cozy' | 'special';
-}
-
-// Sample date plans - you'll replace these with your Firebase data
-const samplePlans: DatePlan[] = [
-  {
-    id: '1',
-    title: 'Sunset Picnic in the Park',
-    location: 'Central Park',
-    description: 'A romantic evening watching the sunset together with homemade treats and good music.',
-    date: '2024-01-20',
-    time: '17:00',
-    whatToBring: ['Picnic blanket', 'Homemade sandwiches', 'Wine', 'Bluetooth speaker'],
-    isUpcoming: true,
-    category: 'romantic'
-  },
-  {
-    id: '2',
-    title: 'Cooking Class Together',
-    location: 'Italian Cooking Studio',
-    description: 'Learn to make fresh pasta and tiramisu together in a fun, interactive class.',
-    date: '2024-01-25',
-    time: '19:00',
-    whatToBring: ['Aprons', 'Camera for photos', 'Appetite for fun'],
-    isUpcoming: true,
-    category: 'adventure'
-  },
-  {
-    id: '3',
-    title: 'Movie Marathon Night',
-    location: 'Our Living Room',
-    description: 'Cozy night in with our favorite romantic movies, popcorn, and cuddles.',
-    date: '2024-01-15',
-    time: '20:00',
-    whatToBring: ['Comfy clothes', 'Favorite snacks', 'Soft blankets'],
-    isUpcoming: false,
-    category: 'cozy'
-  },
-  {
-    id: '4',
-    title: 'Surprise Date Night',
-    location: '🤫 Secret Location',
-    description: 'A special surprise I\'ve been planning... you\'ll find out soon!',
-    date: '2024-02-14',
-    time: '18:30',
-    whatToBring: ['Dress nicely', 'Open mind', 'Beautiful smile'],
-    isUpcoming: true,
-    category: 'special'
-  }
-];
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
+import { DatePlan, addDatePlan, getDatePlans } from '@/firebase/firestore';
 
 const categoryColors = {
   romantic: 'bg-red-100 text-red-800 border-red-200',
@@ -79,11 +27,51 @@ const categoryIcons = {
 };
 
 export const DatePlanner = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [filter, setFilter] = useState<'all' | 'upcoming' | 'past'>('all');
+  const [plans, setPlans] = useState<DatePlan[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [newPlan, setNewPlan] = useState({
+    title: '',
+    location: '',
+    description: '',
+    date: '',
+    time: '',
+    itemsToBring: [] as string[],
+    category: 'romantic' as const
+  });
+  const [itemInput, setItemInput] = useState('');
+
+  useEffect(() => {
+    if (!user) return;
+
+    const loadPlans = async () => {
+      try {
+        const datePlans = await getDatePlans(user.uid);
+        setPlans(datePlans);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to load date plans",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPlans();
+  }, [user, toast]);
   
-  const filteredPlans = samplePlans.filter(plan => {
-    if (filter === 'upcoming') return plan.isUpcoming;
-    if (filter === 'past') return !plan.isUpcoming;
+  const filteredPlans = plans.filter(plan => {
+    const planDate = new Date(plan.date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    if (filter === 'upcoming') return planDate >= today;
+    if (filter === 'past') return planDate < today;
     return true;
   });
 
@@ -96,6 +84,89 @@ export const DatePlanner = () => {
       day: 'numeric' 
     });
   };
+
+  const handleAddItem = () => {
+    if (itemInput.trim() && !newPlan.itemsToBring.includes(itemInput.trim())) {
+      setNewPlan(prev => ({
+        ...prev,
+        itemsToBring: [...prev.itemsToBring, itemInput.trim()]
+      }));
+      setItemInput('');
+    }
+  };
+
+  const handleRemoveItem = (item: string) => {
+    setNewPlan(prev => ({
+      ...prev,
+      itemsToBring: prev.itemsToBring.filter(i => i !== item)
+    }));
+  };
+
+  const handleAddPlan = async () => {
+    if (!user || !newPlan.title.trim() || !newPlan.date) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      await addDatePlan({
+        title: newPlan.title.trim(),
+        location: newPlan.location.trim(),
+        description: newPlan.description.trim(),
+        date: newPlan.date,
+        time: newPlan.time,
+        itemsToBring: newPlan.itemsToBring,
+        category: newPlan.category,
+        userId: user.uid
+      });
+
+      // Refresh plans
+      const updatedPlans = await getDatePlans(user.uid);
+      setPlans(updatedPlans);
+
+      // Reset form
+      setNewPlan({
+        title: '',
+        location: '',
+        description: '',
+        date: '',
+        time: '',
+        itemsToBring: [],
+        category: 'romantic'
+      });
+      setShowAddDialog(false);
+
+      toast({
+        title: "Success",
+        description: "Date plan added successfully!"
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add date plan. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <Card className="bg-gradient-to-br from-accent/30 to-primary/20 backdrop-blur-sm border-border/50">
+          <CardContent className="p-8">
+            <div className="text-center">
+              <Calendar className="w-8 h-8 text-primary animate-pulse mx-auto mb-4" />
+              <p className="text-muted-foreground">Loading your date plans...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -132,14 +203,128 @@ export const DatePlanner = () => {
       </div>
 
       {/* Add new plan button */}
-      <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border-dashed border-2 border-primary/30 hover:border-primary/50 transition-all duration-300 cursor-pointer">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-center gap-2 text-primary">
-            <Plus className="w-5 h-5" />
-            <span className="font-medium">Plan Our Next Adventure</span>
+      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+        <DialogTrigger asChild>
+          <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border-dashed border-2 border-primary/30 hover:border-primary/50 transition-all duration-300 cursor-pointer">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-center gap-2 text-primary">
+                <Plus className="w-5 h-5" />
+                <span className="font-medium">Plan Our Next Adventure</span>
+              </div>
+            </CardContent>
+          </Card>
+        </DialogTrigger>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Add New Date Plan</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="title">Title *</Label>
+                <Input
+                  id="title"
+                  placeholder="Romantic dinner..."
+                  value={newPlan.title}
+                  onChange={(e) => setNewPlan(prev => ({ ...prev, title: e.target.value }))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="category">Category</Label>
+                <Select value={newPlan.category} onValueChange={(value: any) => setNewPlan(prev => ({ ...prev, category: value }))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="romantic">💕 Romantic</SelectItem>
+                    <SelectItem value="adventure">🗺️ Adventure</SelectItem>
+                    <SelectItem value="cozy">🏠 Cozy</SelectItem>
+                    <SelectItem value="special">✨ Special</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div>
+              <Label htmlFor="location">Location</Label>
+              <Input
+                id="location"
+                placeholder="Where will this happen?"
+                value={newPlan.location}
+                onChange={(e) => setNewPlan(prev => ({ ...prev, location: e.target.value }))}
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                placeholder="Describe this special plan..."
+                value={newPlan.description}
+                onChange={(e) => setNewPlan(prev => ({ ...prev, description: e.target.value }))}
+                rows={3}
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="date">Date *</Label>
+                <Input
+                  id="date"
+                  type="date"
+                  value={newPlan.date}
+                  onChange={(e) => setNewPlan(prev => ({ ...prev, date: e.target.value }))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="time">Time</Label>
+                <Input
+                  id="time"
+                  type="time"
+                  value={newPlan.time}
+                  onChange={(e) => setNewPlan(prev => ({ ...prev, time: e.target.value }))}
+                />
+              </div>
+            </div>
+            
+            <div>
+              <Label>Items to Bring</Label>
+              <div className="flex gap-2 mb-2">
+                <Input
+                  placeholder="Add an item..."
+                  value={itemInput}
+                  onChange={(e) => setItemInput(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleAddItem()}
+                />
+                <Button type="button" onClick={handleAddItem} size="sm">
+                  Add
+                </Button>
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {newPlan.itemsToBring.map((item, index) => (
+                  <Badge 
+                    key={index} 
+                    variant="secondary" 
+                    className="cursor-pointer"
+                    onClick={() => handleRemoveItem(item)}
+                  >
+                    {item} ×
+                  </Badge>
+                ))}
+              </div>
+            </div>
+            
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => setShowAddDialog(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleAddPlan}>
+                Add Plan
+              </Button>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+        </DialogContent>
+      </Dialog>
 
       {/* Date plans grid */}
       <div className="grid gap-6 md:grid-cols-2">
@@ -178,14 +363,14 @@ export const DatePlanner = () => {
                 </div>
               </div>
 
-              {plan.whatToBring.length > 0 && (
+              {plan.itemsToBring.length > 0 && (
                 <div>
                   <div className="flex items-center gap-2 text-sm font-medium mb-2">
                     <Package className="w-4 h-4 text-primary" />
                     <span>What to bring:</span>
                   </div>
                   <div className="flex flex-wrap gap-1">
-                    {plan.whatToBring.map((item, itemIndex) => (
+                    {plan.itemsToBring.map((item, itemIndex) => (
                       <Badge 
                         key={itemIndex} 
                         variant="secondary" 
@@ -202,11 +387,11 @@ export const DatePlanner = () => {
                 <div className="flex items-center gap-1">
                   <Heart className="w-4 h-4 text-red-500" />
                   <span className="text-xs text-muted-foreground">
-                    {plan.isUpcoming ? 'Looking forward to this!' : 'Beautiful memory'}
+                    {new Date(plan.date) >= new Date() ? 'Looking forward to this!' : 'Beautiful memory'}
                   </span>
                 </div>
                 <Button variant="outline" size="sm">
-                  {plan.isUpcoming ? 'View Details' : 'Relive Memory'}
+                  {new Date(plan.date) >= new Date() ? 'View Details' : 'Relive Memory'}
                 </Button>
               </div>
             </CardContent>
