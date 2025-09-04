@@ -17,19 +17,19 @@ export const RelationshipCounters = () => {
   const milestones: Milestone[] = [
     {
       name: "First Date",
-      date: new Date('2023-01-15'), // Replace with your actual first date
+      date: new Date('2023-01-06T00:00:00-06:00'), // Replace with your actual first date
       icon: <Heart className="w-5 h-5" />,
       color: "text-red-500"
     },
     {
       name: "Proposal Day",
-      date: new Date('2023-08-20'), // Replace with your actual proposal date
+      date: new Date('2025-05-16T00:00:00-06:00'), // Replace with your actual proposal date
       icon: <Gem className="w-5 h-5" />,
       color: "text-yellow-500"
     },
     {
       name: "Wedding Day",
-      date: new Date('2024-06-15'), // Replace with your actual wedding date
+      date: new Date('2026-03-15T00:00:00-06:00'), // Replace with your actual wedding date
       icon: <HomeIcon className="w-5 h-5" />,
       color: "text-purple-500"
     }
@@ -45,13 +45,17 @@ export const RelationshipCounters = () => {
 
   const calculateTimeDifference = (date: Date) => {
     const diff = currentTime.getTime() - date.getTime();
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-    return { days, hours, minutes, seconds };
+    const years = Math.floor(Math.abs(diff) / (1000 * 60 * 60 * 24 * (1461/4)));
+    const months = Math.floor(Math.abs(diff) / (1000 * 60 * 60 * 24 * (1461/48))) % 12;
+    const days = Math.floor(Math.abs(diff) / (1000 * 60 * 60 * 24) % (1461/48));
+    const hours = Math.floor((Math.abs(diff) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((Math.abs(diff) % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((Math.abs(diff) % (1000 * 60)) / 1000);
+
+    return { years, months, days, hours, minutes, seconds };
   };
+
 
   const getNextMonthiversary = () => {
     const firstDate = milestones[0].date;
@@ -92,13 +96,13 @@ export const RelationshipCounters = () => {
             <CardContent>
               <div className="space-y-2">
                 <div className="text-2xl font-bold text-primary">
-                  {timeDiff.days} days
+                  {timeDiff.years} years {timeDiff.months} months {timeDiff.days} days
                 </div>
                 <div className="text-sm text-muted-foreground">
                   {timeDiff.hours}h {timeDiff.minutes}m {timeDiff.seconds}s
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  Since {milestone.date.toLocaleDateString()}
+                  Since {milestone.date.toDateString()}
                 </div>
               </div>
             </CardContent>

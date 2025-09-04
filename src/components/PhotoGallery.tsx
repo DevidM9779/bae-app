@@ -245,7 +245,7 @@ export const PhotoGallery = () => {
           {photos.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {photos.slice().reverse().map((photo, index) => {
-                const photoDate = new Date(photo.month + '-01');
+                const photoDate = new Date(photo.month  + '-01');
                 const isSelected = photo.month === `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
                 
                 return (

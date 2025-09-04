@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Heart, Mail, Lock } from "lucide-react";
+import { Heart, Mail, Lock, LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface AuthWrapperProps {
@@ -184,7 +184,7 @@ export const AuthWrapper = ({ children }: AuthWrapperProps) => {
     <div className="relative">
       <div className="absolute top-4 right-4 z-50">
         <Button variant="outline" onClick={handleLogout}>
-          Sign Out
+          <LogOut />
         </Button>
       </div>
       {children}
