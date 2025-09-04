@@ -125,17 +125,56 @@ export const RelationshipCounters = () => {
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-lg font-semibold">Days until celebration:</span>
-                <span className="text-3xl font-bold text-primary">{monthiversary.daysLeft}</span>
+            <div className="flex flex-col items-center space-y-6">
+              {/* Circular Progress */}
+              <div className="relative w-48 h-48">
+                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                  {/* Background circle */}
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="45"
+                    stroke="hsl(var(--border))"
+                    strokeWidth="8"
+                    fill="none"
+                    className="opacity-20"
+                  />
+                  {/* Progress circle */}
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="45"
+                    stroke="hsl(var(--primary))"
+                    strokeWidth="8"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeDasharray={`${2 * Math.PI * 45}`}
+                    strokeDashoffset={`${2 * Math.PI * 45 * (1 - ((30 - (monthiversary.daysLeft || 0)) / 30))}`}
+                    className="transition-all duration-500 ease-out"
+                    style={{
+                      filter: 'drop-shadow(0 0 8px hsl(var(--primary) / 0.4))'
+                    }}
+                  />
+                </svg>
+                {/* Center content */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-4xl font-bold text-primary mb-1">
+                    {monthiversary.daysLeft}
+                  </span>
+                  <span className="text-sm text-muted-foreground font-medium">
+                    days left
+                  </span>
+                </div>
               </div>
-              <Progress 
-                value={((30 - (monthiversary.daysLeft || 0)) / 30) * 100} 
-                className="h-3"
-              />
-              <div className="text-sm text-muted-foreground text-center">
-                {monthiversary.nextDate && monthiversary.nextDate.toLocaleDateString()}
+              
+              {/* Date info */}
+              <div className="text-center">
+                <div className="text-lg font-semibold text-foreground mb-1">
+                  Next Celebration
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {monthiversary.nextDate && monthiversary.nextDate.toLocaleDateString()}
+                </div>
               </div>
             </div>
           )}
