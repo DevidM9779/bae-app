@@ -44,27 +44,83 @@ export const RelationshipCounters = () => {
   }, []);
 
   const calculateTimeDifference = (date: Date) => {
-    const diff = currentTime.getTime() - date.getTime();
+    // const diff = currentTime.getTime() - date.getTime();
 
-    const years = Math.floor(Math.abs(diff) / (1000 * 60 * 60 * 24 * (1461/4)));
-    const months = Math.floor(Math.abs(diff) / (1000 * 60 * 60 * 24 * (1461/48))) % 12;
-    const days = Math.floor(Math.abs(diff) / (1000 * 60 * 60 * 24) % (1461/48));
-    const hours = Math.floor((Math.abs(diff) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((Math.abs(diff) % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((Math.abs(diff) % (1000 * 60)) / 1000);
+    // const years = Math.floor(Math.abs(diff) / (1000 * 60 * 60 * 24 * (1461/4)));
+    // const months = Math.floor(Math.abs(diff) / (1000 * 60 * 60 * 24 * (1461/48))) % 12;
+    // const days = Math.floor(Math.abs(diff) / (1000 * 60 * 60 * 24) % (1461/48));
+    // let hours = Math.floor((Math.abs(diff) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    // const minutes = Math.floor((Math.abs(diff) % (1000 * 60 * 60)) / (1000 * 60));
+    // const seconds = Math.floor((Math.abs(diff) % (1000 * 60)) / 1000);
 
-    return { years, months, days, hours, minutes, seconds };
+    // if (diff > 0) hours += 1
+    // else hours -= 1
+
+    // return { years, months, days, hours, minutes, seconds };
+
+    let start = date
+    let end = currentTime
+
+    let invert = false // assume that the date is in the past by default
+    if (start > end) {
+      [start, end] = [end, start]
+      invert = true // show that date is in the future
+    }
+
+    let years = end.getFullYear() - start.getFullYear()
+    let months = end.getMonth() - start.getMonth()
+    let days = end.getDate() - start.getDate()
+    let hours = end.getHours() - start.getHours()
+    let minutes = end.getMinutes() - start.getMinutes()
+    let seconds = end.getSeconds() - start.getSeconds()
+
+    // Fix negatives by 'borrowing' from higher units
+    if (seconds < 0) {
+      seconds += 60
+      minutes -= 1
+    }
+
+    if (minutes < 0) {
+      minutes += 60
+      hours -= 1
+    }
+
+    if (hours < 0) {
+      hours += 24
+      days -= 1
+    }
+
+    if (days < 0) {
+      const prevMonth = new Date(end.getFullYear(), end.getMonth(), 0)
+      days += prevMonth.getDate()
+      months -= 1
+    }
+
+    if (months < 0) {
+      months += 12
+      years -= 1
+    }
+
+
+    return { 
+      years: invert ? years : years, 
+      months: invert ? months : months, 
+      days: invert ? days : days, 
+      hours: invert ? hours : hours, 
+      minutes: invert ? minutes : minutes, 
+      seconds: invert ? seconds : seconds
+    };
   };
 
 
   const getNextMonthiversary = () => {
     const firstDate = milestones[0].date;
     const current = new Date();
-    const next = new Date(current.getFullYear(), current.getMonth() + 1, firstDate.getDate());
-    
-    if (current.getDate() > firstDate.getDate()) {
-      next.setMonth(next.getMonth() + 1);
-    } else if (current.getDate() === firstDate.getDate()) {
+    const next = new Date(current.getFullYear(), current.getMonth() + 1, firstDate.getUTCDate());
+
+    if (current.getDate() < firstDate.getUTCDate()) {
+      next.setMonth(next.getMonth() - 1);
+    } else if (current.getDate() === firstDate.getUTCDate()) {
       // Today is monthiversary!
       return { isToday: true, daysLeft: 0 };
     }
@@ -131,7 +187,7 @@ export const RelationshipCounters = () => {
           ) : (
             <div className="flex flex-col items-center space-y-6">
               {/* Circular Progress */}
-              <div className="relative w-48 h-48">
+              <div className="relative w-48 h-48 rounded-full overflow-hidden isolate">
                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                   {/* Background circle */}
                   <circle
@@ -161,7 +217,7 @@ export const RelationshipCounters = () => {
                   />
                 </svg>
                 {/* Center content */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none rounded-full bg-transparent">
                   <span className="text-4xl font-bold text-primary mb-1">
                     {monthiversary.daysLeft}
                   </span>
@@ -177,7 +233,7 @@ export const RelationshipCounters = () => {
                   Next Celebration
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  {monthiversary.nextDate && monthiversary.nextDate.toLocaleDateString()}
+                  {monthiversary.nextDate && monthiversary.nextDate.toLocaleDateString('en-US', {timeZone: 'America/Chicago'})}
                 </div>
               </div>
             </div>
