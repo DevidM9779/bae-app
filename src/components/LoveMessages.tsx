@@ -224,8 +224,8 @@ export const LoveMessages = () => {
         <CardContent>
           {messages.length > 0 ? (
             <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-              {messages.slice().reverse().map((message, index) => {
-                const messageDate = new Date(message.month + '-01');
+              {messages.slice().map((message, index) => {
+                let messageDate = new Date(`${message.month}-02`);
                 const isSelected = message.month === `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
                 
                 return (
@@ -237,6 +237,9 @@ export const LoveMessages = () => {
                     onClick={() => {
                       setCurrentDate(messageDate);
                       setSelectedMessage(message);
+                      console.log(message.month+'-01')
+                      console.log(messageDate)
+                      console.log(messageDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }))
                     }}
                   >
                     <CardContent className="p-4">
