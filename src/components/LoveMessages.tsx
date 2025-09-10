@@ -46,7 +46,7 @@ export const LoveMessages = () => {
     // Update selected message when date changes
     const currentMonth = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
     const currentMessage = messages.find(msg => msg.month === currentMonth);
-    setSelectedMessage(currentMessage || messages[0] || null);
+    setSelectedMessage(currentMessage || null);
   }, [currentDate, messages]);
 
   const navigateMonth = (direction: 'prev' | 'next') => {
@@ -234,7 +234,10 @@ export const LoveMessages = () => {
                     className={`cursor-pointer transition-all duration-300 hover:shadow-md ${
                       isSelected ? 'ring-2 ring-primary bg-primary/10' : 'bg-card hover:bg-secondary/30'
                     }`}
-                    onClick={() => setCurrentDate(messageDate)}
+                    onClick={() => {
+                      setCurrentDate(messageDate);
+                      setSelectedMessage(message);
+                    }}
                   >
                     <CardContent className="p-4">
                       <div className="flex justify-between items-start mb-2">
