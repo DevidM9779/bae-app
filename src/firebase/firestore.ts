@@ -129,7 +129,7 @@ export const getPhotos = async (userId: string) => {
   try {
     const q = query(
       collection(db, "photos"),
-      where("userId", "==", userId),
+      // where("userId", "==", userId),
       orderBy("createdAt", "desc")
     );
     const querySnapshot = await getDocs(q);
