@@ -98,6 +98,7 @@ export const PhotoGallery = () => {
     const currentMonth = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
 
     try {
+      console.log("Obtaining imageURL...")
       // Upload image to Firebase Storage
       const imageUrl = await uploadPhotoForMonth(selectedFile, user.uid, currentMonth);
 
@@ -110,7 +111,7 @@ export const PhotoGallery = () => {
         isFavorite: newPhoto.isFavorite,
         userId: user.uid
       });
-
+      console.log("Uploading photo to Firestore...")
       // Refresh photos
       const updatedPhotos = await getPhotos(user.uid);
       setPhotos(updatedPhotos);
@@ -137,6 +138,7 @@ export const PhotoGallery = () => {
         description: "Failed to upload photo. Please try again.",
         variant: "destructive"
       });
+      console.log(error)
     } finally {
       setUploading(false);
     }
