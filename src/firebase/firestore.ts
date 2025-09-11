@@ -41,7 +41,7 @@ export const getLoveMessages = async (userId: string) => {
   try {
     const q = query(
       collection(db, "loveMessages"),
-      where("userId", "==", userId),
+      // where("userId", "==", userId),
       orderBy("createdAt", "desc")
     );
     const querySnapshot = await getDocs(q);
@@ -86,7 +86,7 @@ export const getDatePlans = async (userId: string) => {
   try {
     const q = query(
       collection(db, "datePlans"),
-      where("userId", "==", userId),
+      // where("userId", "==", userId),
       orderBy("date", "asc")
     );
     const querySnapshot = await getDocs(q);
@@ -147,7 +147,7 @@ export const getPhotos = async (userId: string) => {
 export const subscribeToLoveMessages = (userId: string, callback: (messages: LoveMessage[]) => void) => {
   const q = query(
     collection(db, "loveMessages"),
-    where("userId", "==", userId),
+    // where("userId", "==", userId),
     orderBy("createdAt", "desc")
   );
   
