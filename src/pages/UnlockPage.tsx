@@ -11,7 +11,8 @@ const UnlockPage = () => {
   });
 
   useEffect(() => {
-    const targetDate = new Date(`September 26, ${new Date().getFullYear()} 00:00:00 UTC`).getTime();
+    // const targetDate = new Date('2024-09-26T00:00:00-05:00').getTime();
+    const targetDate = new Date('2025-09-26T12:00:00-05:00').getTime();
     
     const updateCountdown = () => {
       const now = new Date().getTime();
@@ -61,7 +62,7 @@ const UnlockPage = () => {
             <div className="countdown-number font-playfair text-7xl md:text-9xl font-bold text-white shimmer-glow mb-2">
               {String(timeLeft.days).padStart(2, '0')}
             </div>
-            <div className="text-white/80 text-xl md:text-2xl uppercase tracking-widest">
+            <div className="text-white/80 font-playfair text-xl md:text-2xl uppercase tracking-widest">
               Days
             </div>
           </div>
@@ -70,7 +71,7 @@ const UnlockPage = () => {
             <div className="countdown-number font-playfair text-7xl md:text-9xl font-bold text-white shimmer-glow mb-2">
               {String(timeLeft.hours).padStart(2, '0')}
             </div>
-            <div className="text-white/80 text-xl md:text-2xl uppercase tracking-widest">
+            <div className="text-white/80 font-playfair text-xl md:text-2xl uppercase tracking-widest">
               Hours
             </div>
           </div>
@@ -79,7 +80,7 @@ const UnlockPage = () => {
             <div className="countdown-number font-playfair text-7xl md:text-9xl font-bold text-white shimmer-glow mb-2">
               {String(timeLeft.minutes).padStart(2, '0')}
             </div>
-            <div className="text-white/80 text-xl md:text-2xl uppercase tracking-widest">
+            <div className="text-white/80 font-playfair text-xl md:text-2xl uppercase tracking-widest">
               Minutes
             </div>
           </div>
@@ -88,7 +89,7 @@ const UnlockPage = () => {
             <div className="countdown-number font-playfair text-7xl md:text-9xl font-bold text-white shimmer-glow mb-2">
               {String(timeLeft.seconds).padStart(2, '0')}
             </div>
-            <div className="text-white/80 text-xl md:text-2xl uppercase tracking-widest">
+            <div className="text-white/80 font-playfair text-xl md:text-2xl uppercase tracking-widest">
               Seconds
             </div>
           </div>
@@ -96,7 +97,7 @@ const UnlockPage = () => {
 
         {/* Heartfelt Subtext */}
         <p className="font-dancing text-2xl md:text-3xl text-white/90 max-w-2xl mx-auto leading-relaxed romantic-glow">
-          Something magical is waiting for you...
+          My cheesier gift yet is waiting for you...
           <br />
           A journey of love and memories begins soon ✨
         </p>

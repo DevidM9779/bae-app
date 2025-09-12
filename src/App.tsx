@@ -16,7 +16,7 @@ const App = () => {
 
   useEffect(() => {
     const checkUnlockStatus = () => {
-      const targetDate = new Date(`September 26, ${new Date().getFullYear()} 00:00:00 UTC`).getTime();
+      const targetDate = new Date('2025-09-26T12:00:00-05:00').getTime();
       const now = new Date().getTime();
       setIsUnlocked(now >= targetDate);
     };
