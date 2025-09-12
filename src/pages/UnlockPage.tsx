@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const UnlockPage = () => {
-  const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -18,8 +16,8 @@ const UnlockPage = () => {
       const difference = targetDate - now;
 
       if (difference <= 0) {
-        // Countdown finished, redirect to home
-        navigate('/');
+        // Countdown finished - App.tsx will handle the redirect
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
         return;
       }
 
@@ -38,7 +36,7 @@ const UnlockPage = () => {
     const interval = setInterval(updateCountdown, 1000);
 
     return () => clearInterval(interval);
-  }, [navigate]);
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden unlock-gradient">
