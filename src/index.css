@@ -142,4 +142,83 @@
   .love-gradient {
     background: var(--gradient-love);
   }
+
+  /* Unlock Page Styles */
+  .unlock-gradient {
+    background: linear-gradient(135deg, 
+      #10b981 0%,    /* Soft emerald green */
+      #f3e8ff 35%,   /* Pastel pink */
+      #fbbf24 70%,   /* Champagne gold */
+      #f59e0b 100%   /* Rich gold */
+    );
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease-in-out infinite;
+  }
+
+  .romantic-glow {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5),
+                 0 0 40px rgba(16, 185, 129, 0.3),
+                 0 0 60px rgba(251, 191, 36, 0.2);
+  }
+
+  .shimmer-glow {
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.8),
+                 0 0 60px rgba(16, 185, 129, 0.4),
+                 0 0 90px rgba(251, 191, 36, 0.3);
+    animation: shimmer 2s ease-in-out infinite alternate;
+  }
+
+  .sparkle-animation {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.8), transparent),
+      radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.6), transparent),
+      radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.7), transparent),
+      radial-gradient(1px 1px at 130px 80px, rgba(255, 255, 255, 0.5), transparent),
+      radial-gradient(2px 2px at 160px 30px, rgba(255, 255, 255, 0.9), transparent);
+    background-repeat: repeat;
+    background-size: 200px 100px;
+    animation: sparkle 4s linear infinite;
+  }
+
+  .gradient-waves {
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, 
+      transparent 40%, 
+      rgba(255, 255, 255, 0.1) 50%, 
+      transparent 60%);
+    animation: wave 6s ease-in-out infinite;
+  }
+
+  @keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  @keyframes shimmer {
+    0% { 
+      text-shadow: 0 0 30px rgba(255, 255, 255, 0.8),
+                   0 0 60px rgba(16, 185, 129, 0.4),
+                   0 0 90px rgba(251, 191, 36, 0.3);
+    }
+    100% { 
+      text-shadow: 0 0 40px rgba(255, 255, 255, 1),
+                   0 0 80px rgba(16, 185, 129, 0.6),
+                   0 0 120px rgba(251, 191, 36, 0.5);
+    }
+  }
+
+  @keyframes sparkle {
+    0%, 100% { opacity: 0.3; transform: translateY(0px); }
+    50% { opacity: 0.8; transform: translateY(-10px); }
+  }
+
+  @keyframes wave {
+    0%, 100% { transform: translateX(-50%) translateY(-50%) rotate(0deg); }
+    50% { transform: translateX(-50%) translateY(-50%) rotate(180deg); }
+  }
 }
