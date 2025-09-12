@@ -55,39 +55,39 @@ const UnlockPage = () => {
         </h1>
 
         {/* Countdown Timer */}
-        <div className="flex flex-wrap justify-center gap-8 mb-12">
-          <div className="text-center">
-            <div className="countdown-number font-playfair text-7xl md:text-9xl font-bold text-white shimmer-glow mb-2">
+        <div className="flex flex-nowrap justify-center gap-4 mb-12 overflow-x-auto">
+          <div className="text-center flex-shrink-0">
+            <div className="countdown-number font-playfair text-5xl sm:text-7xl md:text-9xl font-bold text-white shimmer-glow mb-1 sm:mb-2">
               {String(timeLeft.days).padStart(2, '0')}
             </div>
-            <div className="text-white/80 font-playfair text-xl md:text-2xl uppercase tracking-widest">
+            <div className="text-white/80 font-playfair text-sm sm:text-xl md:text-2xl uppercase tracking-widest">
               Days
             </div>
           </div>
-          
-          <div className="text-center">
-            <div className="countdown-number font-playfair text-7xl md:text-9xl font-bold text-white shimmer-glow mb-2">
+
+          <div className="text-center flex-shrink-0">
+            <div className="countdown-number font-playfair text-5xl sm:text-7xl md:text-9xl font-bold text-white shimmer-glow mb-1 sm:mb-2">
               {String(timeLeft.hours).padStart(2, '0')}
             </div>
-            <div className="text-white/80 font-playfair text-xl md:text-2xl uppercase tracking-widest">
+            <div className="text-white/80 font-playfair text-sm sm:text-xl md:text-2xl uppercase tracking-widest">
               Hours
             </div>
           </div>
-          
-          <div className="text-center">
-            <div className="countdown-number font-playfair text-7xl md:text-9xl font-bold text-white shimmer-glow mb-2">
+
+          <div className="text-center flex-shrink-0">
+            <div className="countdown-number font-playfair text-5xl sm:text-7xl md:text-9xl font-bold text-white shimmer-glow mb-1 sm:mb-2">
               {String(timeLeft.minutes).padStart(2, '0')}
             </div>
-            <div className="text-white/80 font-playfair text-xl md:text-2xl uppercase tracking-widest">
+            <div className="text-white/80 font-danplayfairing text-sm sm:text-xl md:text-2xl uppercase tracking-widest">
               Minutes
             </div>
           </div>
-          
-          <div className="text-center">
-            <div className="countdown-number font-playfair text-7xl md:text-9xl font-bold text-white shimmer-glow mb-2">
+
+          <div className="text-center flex-shrink-0">
+            <div className="countdown-number font-playfair text-5xl sm:text-7xl md:text-9xl font-bold text-white shimmer-glow mb-1 sm:mb-2">
               {String(timeLeft.seconds).padStart(2, '0')}
             </div>
-            <div className="text-white/80 font-playfair text-xl md:text-2xl uppercase tracking-widest">
+            <div className="text-white/80 font-playfair text-sm sm:text-xl md:text-2xl uppercase tracking-widest">
               Seconds
             </div>
           </div>
@@ -95,7 +95,7 @@ const UnlockPage = () => {
 
         {/* Heartfelt Subtext */}
         <p className="font-dancing text-2xl md:text-3xl text-white/90 max-w-2xl mx-auto leading-relaxed romantic-glow">
-          My cheesier gift yet is waiting for you...
+          My cheesiest gift yet is waiting for you...
           <br />
           A journey of love and memories begins soon ✨
         </p>
