@@ -18,7 +18,7 @@ const App = () => {
 
   useEffect(() => {
     const checkUnlockStatus = () => {
-      const targetDate = new Date('2025-09-26T12:00:00-05:00').getTime();
+      const targetDate = new Date('2025-09-14T10:30:00-05:00').getTime();
       const now = new Date().getTime();
       const unlocked = now - 550 >= targetDate;
       
@@ -46,7 +46,7 @@ const App = () => {
         <BrowserRouter>
           <div className="relative">
             {/* Main App - Always rendered */}
-            <div className={`app-container ${appRevealed ? 'app-revealed' : ''}`}>
+            <div className={`app-container min-h-screen ${appRevealed ? 'app-revealed' : ''}`}>
               <AuthWrapper>
                 <Routes>
                   <Route path="/" element={<Index />} />
