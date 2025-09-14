@@ -18,7 +18,7 @@ const App = () => {
     const checkUnlockStatus = () => {
       const targetDate = new Date('2025-09-26T12:00:00-05:00').getTime();
       const now = new Date().getTime();
-      setIsUnlocked(now >= targetDate);
+      setIsUnlocked(now - 550 >= targetDate);
     };
 
     checkUnlockStatus();
