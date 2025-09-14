@@ -13,19 +13,30 @@ const queryClient = new QueryClient();
 
 const App = () => {
   const [isUnlocked, setIsUnlocked] = useState(false);
+  const [showUnlockPage, setShowUnlockPage] = useState(true);
+  const [appRevealed, setAppRevealed] = useState(false);
 
   useEffect(() => {
     const checkUnlockStatus = () => {
       const targetDate = new Date('2025-09-26T12:00:00-05:00').getTime();
       const now = new Date().getTime();
-      setIsUnlocked(now - 550 >= targetDate);
+      const unlocked = now - 550 >= targetDate;
+      
+      if (unlocked && !isUnlocked) {
+        setIsUnlocked(true);
+        setAppRevealed(true);
+        // Hide unlock page after animation completes
+        setTimeout(() => {
+          setShowUnlockPage(false);
+        }, 600); // Match the animation duration
+      }
     };
 
     checkUnlockStatus();
     const interval = setInterval(checkUnlockStatus, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isUnlocked]);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -33,17 +44,23 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          {!isUnlocked ? (
-            <UnlockPage />
-          ) : (
-            <AuthWrapper>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </AuthWrapper>
-          )}
+          <div className="relative">
+            {/* Main App - Always rendered */}
+            <div className={`app-container ${appRevealed ? 'app-revealed' : ''}`}>
+              <AuthWrapper>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </AuthWrapper>
+            </div>
+            
+            {/* UnlockPage Overlay */}
+            {showUnlockPage && (
+              <UnlockPage isFinished={isUnlocked} />
+            )}
+          </div>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
