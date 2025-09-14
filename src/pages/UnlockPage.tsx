@@ -7,6 +7,7 @@ const UnlockPage = () => {
     minutes: 0,
     seconds: 0
   });
+  const [isFinished, setIsFinished] = useState(false);
 
   useEffect(() => {
     // const targetDate = new Date('2024-09-26T00:00:00-05:00').getTime();
@@ -17,8 +18,9 @@ const UnlockPage = () => {
       const difference = targetDate - now;
 
       if (difference <= 0) {
-        // Countdown finished - App.tsx will handle the redirect
+        // Countdown finished - trigger animation
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        setIsFinished(true);
         return;
       }
 
@@ -40,7 +42,7 @@ const UnlockPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden unlock-gradient">
+    <div className={`min-h-screen flex items-center justify-center relative overflow-hidden unlock-gradient ${isFinished ? 'unlock-slide-up' : ''}`}>
       {/* Background Animation */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="sparkle-animation"></div>
