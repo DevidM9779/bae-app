@@ -7,6 +7,7 @@ const UnlockPage = () => {
     minutes: 0,
     seconds: 0
   });
+  const [isFinished, setIsFinished] = useState(false);
 
   const [isFinished, setIsFinished] = useState(false);
 
