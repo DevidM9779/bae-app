@@ -16,27 +16,27 @@ const App = () => {
   const [showUnlockPage, setShowUnlockPage] = useState(true);
   const [appRevealed, setAppRevealed] = useState(false);
 
-  useEffect(() => {
-    const checkUnlockStatus = () => {
-      const targetDate = new Date('2025-09-26T12:00:00-05:00').getTime();
-      const now = new Date().getTime();
-      const unlocked = now - 550 >= targetDate;
+  // useEffect(() => {
+  //   const checkUnlockStatus = () => {
+  //     const targetDate = new Date('2025-09-25T12:00:00-05:00').getTime();
+  //     const now = new Date().getTime();
+  //     const unlocked = now - 550 >= targetDate;
       
-      if (unlocked && !isUnlocked) {
-        setIsUnlocked(true);
-        setAppRevealed(true);
-        // Hide unlock page after animation completes
-        setTimeout(() => {
-          setShowUnlockPage(false);
-        }, 600); // Match the animation duration
-      }
-    };
+  //     if (unlocked && !isUnlocked) {
+  //       setIsUnlocked(true);
+  //       setAppRevealed(true);
+  //       // Hide unlock page after animation completes
+  //       setTimeout(() => {
+  //         setShowUnlockPage(false);
+  //       }, 600); // Match the animation duration
+  //     }
+  //   };
 
-    checkUnlockStatus();
-    const interval = setInterval(checkUnlockStatus, 1000);
+  //   checkUnlockStatus();
+  //   const interval = setInterval(checkUnlockStatus, 1000);
 
-    return () => clearInterval(interval);
-  }, [isUnlocked]);
+  //   return () => clearInterval(interval);
+  // }, [isUnlocked]);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -57,9 +57,9 @@ const App = () => {
             </div>
             
             {/* UnlockPage Overlay */}
-            {showUnlockPage && (
+            {/* {showUnlockPage && (
               <UnlockPage isFinished={isUnlocked} />
-            )}
+            )} */}
           </div>
         </BrowserRouter>
       </TooltipProvider>
